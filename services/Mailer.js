@@ -1,44 +1,29 @@
 const sendgrid = require('sendgrid')
-const helper = sendgrid.mail
 const keys = require('../config/keys')
+const helper = sendgrid.mail
 
-class Mailer extends helper.Mail {
-  constructor({ subject, recipients }, content) {
-    super()
+function Mailer() {
+  var fromEmail = new helper.Email('newton1988@gmail.com')
+  var toEmail = new helper.Email('rnewton@mba2018.hbs.edu')
+  var subject = 'Daily Book Quotes'
+  var content = new helper.Content('text/plain', 'Test body content')
+  var mail = new helper.Mail(fromEmail, subject, toEmail, content)
 
-    this.sgApi = sendgrid(keys.sendGridKey)
-    this.from_email = new helper.Email('newton1988@gmail.com')
-    this.subject = subject
-    this.body = new helper.Content('text/html', content)
-    this.recipients = this.formatAddresses(recipients)
+  var sg = sendgrid(keys.sendGridKey)
+  var request = sg.emptyRequest({
+    method: 'POST',
+    path: '/v3/mail/send',
+    body: mail.toJSON()
+  })
 
-    this.addContent(this.body)
-  }
-
-  formatAddresses(recipients) {
-    return recipients.map(({ email }) => {
-      return new helper.Email(email)
-    })
-  }
-
-  addRecipients() {
-    const personalize = new helper.Personalization()
-    this.recipients.forEach(recipient => {
-      personalize.addTo(recipient)
-    })
-    this.addPersonalization(personalize)
-  }
-
-  async send() {
-    const request = this.sgApi.emptyRequest({
-      method: 'POST',
-      path: '/v3/mail/send',
-      body: this.toJSON(),
-    })
-
-    const response = await this.sgApi.API(request)
-    return response
-  }
+  sg.API(request, function (error, response) {
+    if (error) {
+      console.log('Error response received')
+    }
+    console.log(response.statusCode)
+    console.log(response.body)
+    console.log(response.headers)
+  })
 }
 
 module.exports = Mailer
