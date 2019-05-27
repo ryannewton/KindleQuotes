@@ -1,16 +1,17 @@
 const sendgrid = require('sendgrid')
+const template = require('./emailTemplate')
 const keys = require('../config/keys')
 const helper = sendgrid.mail
 
-function Mailer() {
-  var fromEmail = new helper.Email('newton1988@gmail.com')
-  var toEmail = new helper.Email('rnewton@mba2018.hbs.edu')
-  var subject = 'Daily Book Quotes'
-  var content = new helper.Content('text/plain', 'Test body content')
-  var mail = new helper.Mail(fromEmail, subject, toEmail, content)
+function Mailer(quotes) {
+  const fromEmail = new helper.Email('rnewton@mba2018.hbs.edu')
+  const toEmail = new helper.Email('newton1988@gmail.com')
+  const subject = 'Daily Book Quotes'
+  const content = new helper.Content('text/html', template(quotes))
+  const mail = new helper.Mail(fromEmail, subject, toEmail, content)
 
-  var sg = sendgrid(keys.sendGridKey)
-  var request = sg.emptyRequest({
+  const sg = sendgrid(keys.sendGridKey)
+  const request = sg.emptyRequest({
     method: 'POST',
     path: '/v3/mail/send',
     body: mail.toJSON()

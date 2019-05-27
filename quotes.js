@@ -1,5 +1,3 @@
-
-                
 var neverSplitTheDifferenceQuotes = ['Mnookin, predictably, started fumbling because the frame of the conversation had shifted from how I’d respond to the threat of my son’s murder to how the professor would deal with the logistical issues involved in getting the money. How he would solve my problems. To every threat and demand he made, I continued to ask how I was supposed to pay him and how was I supposed to know that my son was alive.',
 '“I’m just asking questions,” I said. “It’s a passive-aggressive approach. I just ask the same three or four open-ended questions over and over and over and over. They get worn out answering and give me everything I want.”',
 'under this model, if you know how to affect your counterpart’s System 1 thinking, his inarticulate feelings, by how you frame and deliver your questions and statements, then you can guide his System 2 rationality and therefore modify his responses.',
@@ -167,3 +165,5 @@ var neverSplitTheDifferenceQuotes = ['Mnookin, predictably, started fumbling bec
 'Having labels prepared will allow you to quickly turn your counterpart’s responses back to them, which will keep them feeding you new and expanding information. Again, these are fill-in-the-blank labels that you can use quickly without tons of thought: It seems like __________ is important. It seems you feel like my company is in a unique position to __________. It seems like you are worried that __________.',
 'SECTION V: NONCASH OFFERS Prepare a list of noncash items possessed by your counterpart that would be valuable.'
 ];
+
+module.exports = neverSplitTheDifferenceQuotes;

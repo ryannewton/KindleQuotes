@@ -4,7 +4,7 @@ module.exports = quotes => {
       <body>
         <div style="text-align: center;">
           <h3>Here are your daily quotes</h3>
-          <div>
+          <div style="text-align: left;">
             <p>${quotes[0]}</p>
             <p>${quotes[1]}</p>
             <p>${quotes[2]}</p>
