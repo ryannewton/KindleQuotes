@@ -17,9 +17,7 @@ const client = new Client({
 
 client.connect()
 
-console.log('connected')
-
-function insertBook(title) {
+const insertBook = (title) => {
   client.query('INSERT INTO books(title) VALUES($1)', [title], (err, res) => {
     if(err) {
       console.log('ERROR: ', err)
@@ -30,7 +28,7 @@ function insertBook(title) {
   })
 }
 
-function deleteBook(title) {
+const deleteBook = (title) => {
   client.query(`DELETE FROM books WHERE books.title = \'${title}\'`, (err, res) => {
     if(err) {
       console.log('ERROR: ', err)
@@ -41,8 +39,19 @@ function deleteBook(title) {
   })
 }
 
+const insertQuote = async (quote, book_title) => {
+  const res = await client.query(`SELECT book_id FROM books WHERE title = \'${book_title}\'`)
+  const bookId = res.rows[0].book_id
+  try {
+    client.query(`INSERT INTO quotes(book_id, quote) VALUES('${bookId}', '${quote}')`)
+  } catch(err) {
+    console.log('Error: ', err)
+  }
+  client.end()
+}
 
 module.exports = {
   insertBook,
-  deleteBook
+  deleteBook,
+  insertQuote
 }
