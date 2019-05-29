@@ -19,20 +19,30 @@ client.connect()
 
 console.log('connected')
 
-client.query('INSERT INTO books(title) VALUES($1)', ['Never Split the Difference'], (err, res) => {
-  if(err) {
-    console.log('ERROR: ', err)
-  } else {
-    console.log('INSERT successful')
-  }
-  client.end()
-})
+function insertBook(title) {
+  client.query('INSERT INTO books(title) VALUES($1)', [title], (err, res) => {
+    if(err) {
+      console.log('ERROR: ', err)
+    } else {
+      console.log('Inserted ', title)
+    }
+    client.end()
+  })
+}
 
-// client.query('DELETE FROM books WHERE books.book_id = \'ee8edae8-3aa9-4dde-acf2-40f6d4b07ed1\'', (err, res) => {
-//   if(err) {
-//     console.log('ERROR: ', err)
-//   } else {
-//     console.log('DELETE successful')
-//   }
-//   client.end()
-// })
+function deleteBook(title) {
+  client.query(`DELETE FROM books WHERE books.title = \'${title}\'`, (err, res) => {
+    if(err) {
+      console.log('ERROR: ', err)
+    } else {
+      console.log('Deleted ', title)
+    }
+    client.end()
+  })
+}
+
+
+module.exports = {
+  insertBook,
+  deleteBook
+}
