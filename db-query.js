@@ -24,7 +24,6 @@ const insertBook = (title) => {
     } else {
       console.log('Inserted ', title)
     }
-    client.end()
   })
 }
 
@@ -35,7 +34,6 @@ const deleteBook = (title) => {
     } else {
       console.log('Deleted ', title)
     }
-    client.end()
   })
 }
 
@@ -43,11 +41,10 @@ const insertQuote = async (quote, book_title) => {
   const res = await client.query(`SELECT book_id FROM books WHERE title = \'${book_title}\'`)
   const bookId = res.rows[0].book_id
   try {
-    client.query(`INSERT INTO quotes(book_id, quote) VALUES('${bookId}', '${quote}')`)
+    await client.query(`INSERT INTO quotes(book_id, quote) VALUES('${bookId}', '${quote}')`)
   } catch(err) {
     console.log('Error: ', err)
   }
-  client.end()
 }
 
 const getQuotes = async (book_title) => {
@@ -60,7 +57,6 @@ const getQuotes = async (book_title) => {
   } catch(err) {
     console.log('Error: ', err)
   }
-  client.end()
 }
 
 module.exports = {
