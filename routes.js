@@ -10,9 +10,15 @@ module.exports = app => {
   })
 
   app.post('/quotes/add', async (req, res) => {
-    const { quote, title } = req.body
-    insertQuote(quote, title)
-    res.send('We received your quote')
+    const { quotes, title } = req.body
+    if(!Array.isArray(quotes) || !(typeof title == 'string')) {
+      return res.status(400).send('Please include an array of quotes and a title')
+    }
+
+    quotes.forEach(quote => {
+      insertQuote(quote, title)
+    })
+    res.send('We received your quote(s)')
   })
 
   app.get('/quotes/retrieve', async (req, res) => {
