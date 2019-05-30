@@ -50,8 +50,22 @@ const insertQuote = async (quote, book_title) => {
   client.end()
 }
 
+const getQuotes = async (book_title) => {
+  const res = await client.query(`SELECT book_id FROM books WHERE title = \'${book_title}\'`)
+  const bookId = res.rows[0].book_id
+  try {
+    const res = await client.query(`SELECT quote FROM quotes WHERE book_id = '${bookId}'`)
+    const quotes = res.rows.map((obj) => obj.quote)
+    return quotes
+  } catch(err) {
+    console.log('Error: ', err)
+  }
+  client.end()
+}
+
 module.exports = {
   insertBook,
   deleteBook,
-  insertQuote
+  insertQuote,
+  getQuotes,
 }
