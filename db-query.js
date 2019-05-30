@@ -1,19 +1,7 @@
 const { Client } = require('pg')
-const {
-  postgresUser,
-  postgresHost,
-  postgresDatabase,
-  postgresPassword,
-  postgresPort
-} = require('./config/keys')
+const { databaseUrl } = require('./config/keys')
 
-const client = new Client({
-  user: postgresUser,
-  host: postgresHost,
-  database: postgresDatabase,
-  password: postgresPassword,
-  port: postgresPort,
-})
+const client = new Client({ connectionString: databaseUrl })
 
 client.connect()
 
