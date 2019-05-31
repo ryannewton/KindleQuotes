@@ -1,5 +1,10 @@
 const schedule = require('node-schedule')
-const { insertBook, insertQuote, getQuotes } = require('./db-query')
+const {
+  insertBook,
+  insertQuote,
+  getQuotesAndIds,
+  updateEmailedDate,
+} = require('./db-query')
 const Mailer = require('./services/Mailer')
 
 module.exports = app => {
@@ -29,9 +34,10 @@ module.exports = app => {
 
   app.post('/quotes/schedule', async (req, res) => {
     const { title, time: { minute, hour }} = req.body
-    const quotes = await getQuotes(title)
+    const quotesAndIds = await getQuotesAndIds(title, 5)
     const j = schedule.scheduleJob(`${minute} ${hour} * * *`, () => {
-      Mailer(quotes)
+      Mailer(quotesAndIds.map(quoteAndId => quoteAndId.quote))
+      updateEmailedDate(quotesAndIds.map(quoteAndId => quoteAndId.quote_id))
     });
     res.send('Your emails have been scheduled')
   })
