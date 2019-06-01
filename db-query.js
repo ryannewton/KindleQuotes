@@ -39,8 +39,8 @@ const getQuotesAndIds = async (book_title, numberOfQuotes) => {
   const res = await client.query(`SELECT book_id FROM books WHERE title = \'${book_title}\'`)
   const bookId = res.rows[0].book_id
   try {
-    const res = await client.query(`SELECT quote_id, quote FROM quotes WHERE book_id = '${bookId}'`)
-    const quotes = res.rows.slice(0, numberOfQuotes)
+    const res = await client.query(`SELECT quote_id, quote FROM quotes WHERE book_id = '${bookId}' ORDER BY CASE WHEN last_emailed IS NULL THEN 0 ELSE 1 END, last_emailed ASC LIMIT ${numberOfQuotes}`)
+    const quotes = res.rows
     return quotes
   } catch(err) {
     console.log('Error: ', err)
