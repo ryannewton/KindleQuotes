@@ -3,6 +3,7 @@ const {
   insertBook,
   insertQuote,
   getQuotesAndIds,
+  getQuotes,
   updateEmailedDate,
 } = require('./db-query')
 const Mailer = require('./services/Mailer')
@@ -28,7 +29,7 @@ module.exports = app => {
 
   app.get('/quotes/retrieve', async (req, res) => {
     const { title } = req.body
-    const quotes = await getQuotes(title)
+    const quotes = await getQuotes(title, 5)
     res.send(quotes)
   })
 

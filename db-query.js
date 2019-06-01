@@ -47,6 +47,12 @@ const getQuotesAndIds = async (book_title, numberOfQuotes) => {
   }
 }
 
+const getQuotes = async (book_title, numberOfQuotes) => {
+  const quotesAndIds = await getQuotesAndIds(book_title, numberOfQuotes)
+  const quotes = quotesAndIds.map(quoteAndId => quoteAndId.quote)
+  return quotes
+}
+
 const updateEmailedDate = async (quote_ids) => {
   quote_ids.forEach(async quote_id => {
     try {
@@ -62,5 +68,6 @@ module.exports = {
   deleteBook,
   insertQuote,
   getQuotesAndIds,
+  getQuotes,
   updateEmailedDate,
 }
