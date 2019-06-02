@@ -39,7 +39,7 @@ const insertQuotes = async (quotes, book_title) => {
   const book_id = await getBookId(book_title)
   quotes.forEach(async quote => {
     try {
-      await client.query(`INSERT INTO quotes(book_id, quote) VALUES('${book_id}', '${quote}')`)
+      await client.query('INSERT INTO quotes(book_id, quote) VALUES($1, $2)', [book_id,quote])
     } catch(err) {
       console.log('Error: ', err)
     }
@@ -60,7 +60,7 @@ const deleteQuotes = async (quotes, book_title) => {
 const getQuotesAndIds = async (book_title, numberOfQuotes) => {
   const book_id = await getBookId(book_title)
   try {
-    const res = await client.query(`SELECT quote_id, quote FROM quotes WHERE book_id = '${book_id}' ORDER BY last_emailed ASC NULLS FIRST LIMIT ${numberOfQuotes}`)
+    const res = await client.query('SELECT quote_id, quote FROM quotes WHERE book_id = $1 ORDER BY last_emailed ASC NULLS FIRST LIMIT $2',[book_id,numberOfQuotes])
     const quotes = res.rows
     return quotes
   } catch(err) {
@@ -77,7 +77,7 @@ const getQuotes = async (book_title, numberOfQuotes) => {
 const updateEmailedDate = async (quote_ids) => {
   quote_ids.forEach(async quote_id => {
     try {
-      const res = await client.query(`UPDATE quotes SET last_emailed = NOW() WHERE quote_id = '${quote_id}'`)
+      await client.query('UPDATE quotes SET last_emailed = NOW() WHERE quote_id = $1',[quote_id])
     } catch (err) {
       console.log('Error: ', err)
     }
