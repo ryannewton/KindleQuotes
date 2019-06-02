@@ -3,8 +3,10 @@ const {
   getQuotesAndIds,
   getQuotes,
   updateEmailedDate,
+  testConnection,
+  insertBook,
+  insertQuotes,
 } = require('./db-query')
-const { testConnection, insertBook, insertQuotes } = require('./db-query-sequelize')
 const Mailer = require('./services/Mailer')
 
 module.exports = app => {
@@ -41,6 +43,6 @@ module.exports = app => {
   })
 
   app.get('/db/test-connection', async (req, res) => {
-    testConnection()
+    await testConnection()
   })
 }
