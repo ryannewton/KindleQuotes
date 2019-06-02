@@ -1,18 +1,18 @@
 const schedule = require('node-schedule')
 const {
-  insertBook,
   insertQuote,
   getQuotesAndIds,
   getQuotes,
   updateEmailedDate,
 } = require('./db-query')
+const { testConnection, insertBook } = require('./db-query-sequelize')
 const Mailer = require('./services/Mailer')
 
 module.exports = app => {
   app.post('/books/add', async (req, res) => {
     const { title } = req.body
-    insertBook(title)
-    res.send('We received book: '+title)
+    const book = await insertBook(title)
+    res.send('We received book: ' + book.title)
   })
 
   app.post('/quotes/add', async (req, res) => {
@@ -41,5 +41,9 @@ module.exports = app => {
       updateEmailedDate(quotesAndIds.map(quoteAndId => quoteAndId.quote_id))
     });
     res.send('Your emails have been scheduled')
+  })
+
+  app.get('/db/test-connection', async (req, res) => {
+    testConnection()
   })
 }
