@@ -8,15 +8,25 @@ const sequelize = new Sequelize(databaseUrl)
 const Book = BookModel(sequelize, Sequelize)
 const Quote = QuoteModel(sequelize, Sequelize)
 
-Quote.belongsTo(Book, { as: 'book_id' });
+const db = {
+  Book,
+  Quote,
+}
+
+Quote.belongsTo(Book, { foreignKey: 'book_id' });
 
 sequelize.sync()
   .then(() => {
     console.log('Database & tables created!')
   })
 
-module.exports = {
-  sequelize,
-  Quote,
-  Book,
-}
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+})
+
+db.sequelize = sequelize
+db.Sequelize = Sequelize
+
+module.exports = db
