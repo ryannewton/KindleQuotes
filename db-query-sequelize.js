@@ -1,4 +1,4 @@
-const { sequelize, Book, Quote } = require('./models')
+const { sequelize, Book, Quote, Sequelize } = require('./models')
 
 const testConnection = () => {
   sequelize
@@ -41,9 +41,41 @@ const insertQuotes = async (quotes, book_title) => {
   }
 }
 
+const getQuotesAndIds = async (book_title, numberOfQuotes) => {
+  const book_id = await getBookId(book_title)
+
+  try {
+    const res = await Quote.findAll({
+      attributes: ['quote', 'quote_id'],
+      where: { book_id },
+      order: [
+        ['last_emailed', 'ASC']
+      ],
+      limit: numberOfQuotes,
+    })
+    const quotesAndIds = res.map(row => {
+      const { quote, quote_id } = row.dataValues
+      return { quote, quote_id }
+    })
+
+    console.log('quotes: ', quotesAndIds)
+    return quotesAndIds
+  } catch(err) {
+    console.log('Error: ', err)
+  }
+}
+
+const getQuotes = async (book_title, numberOfQuotes) => {
+  const quotesAndIds = await getQuotesAndIds(book_title, numberOfQuotes)
+  const quotes = quotesAndIds.map(quoteAndId => quoteAndId.quote)
+  return quotes
+}
+
 module.exports = {
   testConnection,
   insertBook,
   insertQuote,
   insertQuotes,
+  getQuotesAndIds,
+  getQuotes,
 }
