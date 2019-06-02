@@ -1,11 +1,10 @@
 const schedule = require('node-schedule')
 const {
-  insertQuote,
   getQuotesAndIds,
   getQuotes,
   updateEmailedDate,
 } = require('./db-query')
-const { testConnection, insertBook } = require('./db-query-sequelize')
+const { testConnection, insertBook, insertQuotes } = require('./db-query-sequelize')
 const Mailer = require('./services/Mailer')
 
 module.exports = app => {
@@ -21,9 +20,7 @@ module.exports = app => {
       return res.status(400).send('Please include an array of quotes and a title')
     }
 
-    quotes.forEach(quote => {
-      insertQuote(quote, title)
-    })
+    insertQuotes(quotes, title)
     res.send('We received your quote(s)')
   })
 
