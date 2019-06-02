@@ -5,30 +5,34 @@ const client = new Client({ connectionString: databaseUrl })
 
 client.connect()
 
-const insertBook = (title) => {
-  client.query('INSERT INTO books(title) VALUES($1)', [title], (err, res) => {
-    if(err) {
-      console.log('ERROR: ', err)
-    } else {
-      console.log('Inserted ', title)
-    }
-  })
+const insertBook = async title => {
+  try {
+    await client.query('INSERT INTO books(title) VALUES($1)', [title])
+  } catch(err) {
+    console.log('Error: ', err)
+  }
 }
 
-const deleteBook = (title) => {
-  client.query(`DELETE FROM books WHERE books.title = \'${title}\'`, (err, res) => {
-    if(err) {
-      console.log('ERROR: ', err)
-    } else {
-      console.log('Deleted ', title)
-    }
-  })
+const deleteBook = async title => {
+  try {
+    const res = await client.query('DELETE FROM books WHERE books.title = ($1)', [title])
+    return res.rowCount
+  } catch(err) {
+    console.log('Error: ', err)
+  }
 }
 
 const getBookId = async title => {
-  const res = await client.query(`SELECT book_id FROM books WHERE title = \'${title}\'`)
-  const { book_id } = res.rows[0]
-  return book_id
+  try {
+    const res = await client.query('SELECT book_id FROM books WHERE title = ($1)', [title])
+    if(res.rows.length === 0) {
+      return null
+    }
+    const { book_id } = res.rows[0]
+    return book_id
+  } catch(err) {
+    console.log('Error: ', err)
+  }
 }
 
 const insertQuote = async (quote, book_title) => {
@@ -81,6 +85,7 @@ const updateEmailedDate = async (quote_ids) => {
 module.exports = {
   insertBook,
   deleteBook,
+  getBookId,
   insertQuote,
   insertQuotes,
   getQuotesAndIds,
