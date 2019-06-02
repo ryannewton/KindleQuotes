@@ -6,14 +6,15 @@ const {
   testConnection,
   insertBook,
   insertQuotes,
+  deleteQuotes,
 } = require('./db-query')
 const Mailer = require('./services/Mailer')
 
 module.exports = app => {
   app.post('/books/add', async (req, res) => {
     const { title } = req.body
-    const book = await insertBook(title)
-    res.send('We received book: ' + book.title)
+    await insertBook(title)
+    res.send('We received book: ' + title)
   })
 
   app.post('/quotes/add', async (req, res) => {
@@ -24,6 +25,16 @@ module.exports = app => {
 
     insertQuotes(quotes, title)
     res.send('We received your quote(s)')
+  })
+
+  app.delete('/quotes/delete', async (req, res) => {
+    const { quotes, title } = req.body
+    if(!Array.isArray(quotes) || !(typeof title == 'string')) {
+      return res.status(400).send('Please include an array of quotes and a title')
+    }
+
+    deleteQuotes(quotes, title)
+    res.send('We deleted your quote(s)')
   })
 
   app.get('/quotes/retrieve', async (req, res) => {
