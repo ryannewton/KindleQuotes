@@ -25,21 +25,36 @@ const deleteBook = (title) => {
   })
 }
 
+const getBookId = async title => {
+  const res = await client.query(`SELECT book_id FROM books WHERE title = \'${title}\'`)
+  const { book_id } = res.rows[0]
+  return book_id
+}
+
 const insertQuote = async (quote, book_title) => {
-  const res = await client.query(`SELECT book_id FROM books WHERE title = \'${book_title}\'`)
-  const bookId = res.rows[0].book_id
+  const book_id = await getBookId(book_title)
   try {
-    await client.query(`INSERT INTO quotes(book_id, quote) VALUES('${bookId}', '${quote}')`)
+    await client.query(`INSERT INTO quotes(book_id, quote) VALUES('${book_id}', '${quote}')`)
   } catch(err) {
     console.log('Error: ', err)
   }
 }
 
+const insertQuotes = async (quotes, book_title) => {
+  const book_id = await getBookId(book_title)
+  quotes.forEach(async quote => {
+    try {
+      await client.query(`INSERT INTO quotes(book_id, quote) VALUES('${book_id}', '${quote}')`)
+    } catch(err) {
+      console.log('Error: ', err)
+    }
+  })
+}
+
 const getQuotesAndIds = async (book_title, numberOfQuotes) => {
-  const res = await client.query(`SELECT book_id FROM books WHERE title = \'${book_title}\'`)
-  const bookId = res.rows[0].book_id
+  const book_id = await getBookId(book_title)
   try {
-    const res = await client.query(`SELECT quote_id, quote FROM quotes WHERE book_id = '${bookId}' ORDER BY last_emailed ASC NULLS FIRST LIMIT ${numberOfQuotes}`)
+    const res = await client.query(`SELECT quote_id, quote FROM quotes WHERE book_id = '${book_id}' ORDER BY last_emailed ASC NULLS FIRST LIMIT ${numberOfQuotes}`)
     const quotes = res.rows
     return quotes
   } catch(err) {
@@ -67,6 +82,7 @@ module.exports = {
   insertBook,
   deleteBook,
   insertQuote,
+  insertQuotes,
   getQuotesAndIds,
   getQuotes,
   updateEmailedDate,
