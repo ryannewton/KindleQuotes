@@ -35,20 +35,22 @@ const getBookId = async title => {
   }
 }
 
-const insertQuote = async (quote, book_title) => {
-  const book_id = await getBookId(book_title)
-  try {
-    await client.query(`INSERT INTO quotes(book_id, quote) VALUES('${book_id}', '${quote}')`)
-  } catch(err) {
-    console.log('Error: ', err)
-  }
-}
-
 const insertQuotes = async (quotes, book_title) => {
   const book_id = await getBookId(book_title)
   quotes.forEach(async quote => {
     try {
       await client.query(`INSERT INTO quotes(book_id, quote) VALUES('${book_id}', '${quote}')`)
+    } catch(err) {
+      console.log('Error: ', err)
+    }
+  })
+}
+
+const deleteQuotes = async (quotes, book_title) => {
+  const book_id = await getBookId(book_title)
+  quotes.forEach(async quote => {
+    try {
+      await client.query('DELETE FROM quotes WHERE quotes.quote = ($1) AND quotes.book_id = ($2)', [quote, book_id])
     } catch(err) {
       console.log('Error: ', err)
     }
@@ -86,8 +88,8 @@ module.exports = {
   insertBook,
   deleteBook,
   getBookId,
-  insertQuote,
   insertQuotes,
+  deleteQuotes,
   getQuotesAndIds,
   getQuotes,
   updateEmailedDate,

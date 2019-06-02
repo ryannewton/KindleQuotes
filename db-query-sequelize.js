@@ -22,15 +22,6 @@ const getBookId = async title => {
   return book_id
 }
 
-const insertQuote = async (quote, book_title) => {
-  const book_id = await getBookId(book_title)
-  try {
-    await Quote.create({ quote, book_id })
-  } catch(err) {
-    console.log('Error: ', err)
-  }
-}
-
 const insertQuotes = async (quotes, book_title) => {
   const book_id = await getBookId(book_title)
   const new_records = quotes.map(quote => ({ quote, book_id }))
@@ -74,7 +65,6 @@ const getQuotes = async (book_title, numberOfQuotes) => {
 module.exports = {
   testConnection,
   insertBook,
-  insertQuote,
   insertQuotes,
   getQuotesAndIds,
   getQuotes,
