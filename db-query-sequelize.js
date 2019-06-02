@@ -49,7 +49,7 @@ const getQuotesAndIds = async (book_title, numberOfQuotes) => {
       attributes: ['quote', 'quote_id'],
       where: { book_id },
       order: [
-        ['last_emailed', 'ASC']
+        ['last_emailed', 'ASC NULLS FIRST']
       ],
       limit: numberOfQuotes,
     })
