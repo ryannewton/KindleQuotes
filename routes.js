@@ -46,10 +46,12 @@ module.exports = app => {
   app.post('/quotes/schedule', async (req, res) => {
     const { title, time: { minute, hour }} = req.body
     const quotesAndIds = await getQuotesAndIds(title, 5)
+    const quotes = quotesAndIds.map(quoteAndId => quoteAndId.quote)
+    const quoteIds = quotesAndIds.map(quoteAndId => quoteAndId.quote_id)
     const j = schedule.scheduleJob(`${minute} ${hour} * * *`, () => {
-      Mailer(quotesAndIds.map(quoteAndId => quoteAndId.quote))
-      updateEmailedDate(quotesAndIds.map(quoteAndId => quoteAndId.quote_id))
-    });
+      Mailer(quotes, title)
+      updateEmailedDate(quoteIds)
+    })
     res.send('Your emails have been scheduled')
   })
 

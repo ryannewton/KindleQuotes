@@ -1,27 +1,29 @@
-const sendgrid = require('sendgrid')
-const template = require('./emailTemplate')
+const sgMail = require('@sendgrid/mail')
 const keys = require('../config/keys')
-const helper = sendgrid.mail
 
-function Mailer(quotes) {
-  const fromEmail = new helper.Email('rnewton@mba2018.hbs.edu')
-  const toEmail = new helper.Email('newton1988@gmail.com')
-  const subject = 'Daily Book Quotes'
-  const content = new helper.Content('text/html', template(quotes))
-  const mail = new helper.Mail(fromEmail, subject, toEmail, content)
+sgMail.setApiKey(keys.sendGridKey)
 
-  const sg = sendgrid(keys.sendGridKey)
-  const request = sg.emptyRequest({
-    method: 'POST',
-    path: '/v3/mail/send',
-    body: mail.toJSON()
-  })
+const toEmail = 'Ryan Newton <newton1988@gmail.com>'
+const fromEmail = 'Ryan Newton <rnewton@mba2018.hbs.edu>'
+const subject = 'Daily Book Quotes'
 
-  sg.API(request, function (error, response) {
-    if (error) {
-      console.log('Error response received')
-    }
-  })
+const Mailer = (quotes, title) => {
+  const msg = {
+    to: toEmail,
+    from: fromEmail,
+    subject,
+    templateId: keys.sendGridTemplateId,
+    dynamic_template_data: {
+      quote0: quotes[0],
+      quote1: quotes[1],
+      quote2: quotes[2],
+      quote3: quotes[3],
+      quote4: quotes[4],
+      title,
+    },
+  }
+
+  sgMail.send(msg)
 }
 
 module.exports = Mailer
