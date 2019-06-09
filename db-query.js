@@ -35,6 +35,19 @@ const getBookId = async title => {
   }
 }
 
+const getBookTitle = async bookId => {
+  try {
+    const res = await client.query('SELECT title FROM books WHERE book_id = ($1)', [bookId])
+    if(res.rows.length === 0) {
+      return null
+    }
+    const { title } = res.rows[0]
+    return title
+  } catch(err) {
+    console.log('Error: ', err)
+  }
+}
+
 const insertQuotes = async (quotes, book_title) => {
   const book_id = await getBookId(book_title)
   quotes.forEach(async quote => {
@@ -97,14 +110,25 @@ const insertScheduledEmail = async (book_title, time) => {
   }
 }
 
+const getScheduledEmails = async () => {
+  try {
+    const res = await client.query('SELECT * FROM scheduled_emails')
+    return res.rows
+  } catch(err) {
+    console.log('Error: ', err)
+  }
+}
+
 module.exports = {
   insertBook,
   deleteBook,
   getBookId,
+  getBookTitle,
   insertQuotes,
   deleteQuotes,
   getQuotesAndIds,
   getQuotes,
   updateEmailedDate,
   insertScheduledEmail,
+  getScheduledEmails,
 }
