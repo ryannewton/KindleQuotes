@@ -70,6 +70,7 @@ const deleteQuotes = async (quotes, book_title) => {
   })
 }
 
+// Takes numberOfQuotes and either a bookTitle or bookId
 const getQuotesAndIds = async ({ bookTitle, bookId, numberOfQuotes }) => {
   if (!bookId) {
     const book = await getBookByTitle(bookTitle)
@@ -102,8 +103,10 @@ const updateEmailedDate = async (quote_ids) => {
 
 const insertScheduledEmail = async (bookTitle, time) => {
   const { book_id: bookId } = await getBookByTitle(bookTitle)
+  const { hour, minute } = time
+  const timeStr = hour+':'+minute+':00'
   try {
-    const res = await client.query('INSERT INTO scheduled_emails(book_id, time) VALUES($1, $2)',[bookId,time])
+    const res = await client.query('INSERT INTO scheduled_emails(book_id, time) VALUES($1, $2)',[bookId,timeStr])
     const scheduled_email = res.rows
     return scheduled_email
   } catch(err) {
