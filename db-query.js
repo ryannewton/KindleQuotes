@@ -48,23 +48,23 @@ const getBookById = async bookId => {
   }
 }
 
-const insertQuotes = async (quotesWithLocations, bookTitle) => {
+const insertQuotes = async (quotes, bookTitle) => {
   const { book_id: bookId } = await getBookByTitle(bookTitle)
-  quotesWithLocations.forEach(async quoteAndLocation => {
+  quotes.forEach(async quote => {
     try {
-      const { quote, location } = quoteAndLocation
-      await client.query('INSERT INTO quotes(book_id, quote, location) VALUES($1, $2, $3)', [bookId,quote,location])
+      const { text, location } = quote
+      await client.query('INSERT INTO quotes(book_id, text, location) VALUES($1, $2, $3)', [bookId,text,location])
     } catch(err) {
       console.log('Error: ', err)
     }
   })
 }
 
-const deleteQuotes = async (quotes, book_title) => {
-  const { book_id: bookId } = await getBookByTitle(book_title)
-  quotes.forEach(async quote => {
+const deleteQuotes = async (quotesText, bookTitle) => {
+  const { book_id: bookId } = await getBookByTitle(bookTitle)
+  quotesText.forEach(async quoteText => {
     try {
-      await client.query('DELETE FROM quotes WHERE quotes.quote = ($1) AND quotes.book_id = ($2)', [quote, bookId])
+      await client.query('DELETE FROM quotes WHERE quotes.text = ($1) AND quotes.book_id = ($2)', [quoteText, bookId])
     } catch(err) {
       console.log('Error: ', err)
     }
@@ -72,24 +72,21 @@ const deleteQuotes = async (quotes, book_title) => {
 }
 
 // Takes numberOfQuotes and either a bookTitle or bookId
-const getQuotesAndIds = async ({ bookTitle, bookId, numberOfQuotes }) => {
+const getQuotes = async ({ bookTitle, bookId, numberOfQuotes }) => {
   if (!bookId) {
     const book = await getBookByTitle(bookTitle)
+    if(!book) {
+      return null
+    }
     bookId = book.book_id
   }
   try {
-    const res = await client.query('SELECT quote_id, quote FROM quotes WHERE book_id = $1 ORDER BY last_emailed ASC NULLS FIRST LIMIT $2',[bookId,numberOfQuotes])
+    const res = await client.query('SELECT * FROM quotes WHERE book_id = $1 ORDER BY last_emailed ASC NULLS FIRST LIMIT $2',[bookId,numberOfQuotes])
     const quotes = res.rows
     return quotes
   } catch(err) {
     console.log('Error: ', err)
   }
-}
-
-const getQuotes = async (bookTitle, numberOfQuotes) => {
-  const quotesAndIds = await getQuotesAndIds({ bookTitle, numberOfQuotes })
-  const quotes = quotesAndIds.map(quoteAndId => quoteAndId.quote)
-  return quotes
 }
 
 const updateEmailedDate = async (quote_ids) => {
@@ -131,7 +128,6 @@ module.exports = {
   getBookById,
   insertQuotes,
   deleteQuotes,
-  getQuotesAndIds,
   getQuotes,
   updateEmailedDate,
   insertScheduledEmail,

@@ -1,6 +1,5 @@
 const schedule = require('node-schedule')
 const {
-  getQuotesAndIds,
   getQuotes,
   updateEmailedDate,
   testConnection,

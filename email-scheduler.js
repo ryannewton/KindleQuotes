@@ -2,7 +2,7 @@ const schedule = require('node-schedule')
 const { 
   getScheduledEmails,
   updateEmailedDate,
-  getQuotesAndIds,
+  getQuotes,
   getBookById,
 } = require('./db-query')
 const Mailer = require('./services/Mailer')
@@ -22,12 +22,12 @@ const scheduleAllEmails = async () => {
 const scheduleEmail = async ({ time, bookId }) => {
   const { minute, hour } = time
   schedule.scheduleJob(`${minute} ${hour} * * *`, async () => {
-    const quotesAndIds = await getQuotesAndIds({ bookId, numberOfQuotes: 5 })
-    const quotes = quotesAndIds.map(quoteAndId => quoteAndId.quote)
-    const quoteIds = quotesAndIds.map(quoteAndId => quoteAndId.quote_id)
+    const quotes = await getQuotes({ bookId, numberOfQuotes: 5 })
+    const quotesText = quotes.map(quote => quote.text)
+    const quoteIds = quotes.map(quote => quote.quote_id)
     const book = await getBookById(bookId)
     const { bookTitle, author } = book
-    Mailer({ quotes, bookTitle, author })
+    Mailer({ quotesText, bookTitle, author })
     updateEmailedDate(quoteIds)
   })
 }
