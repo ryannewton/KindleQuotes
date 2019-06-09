@@ -20,12 +20,12 @@ module.exports = app => {
   })
 
   app.post('/quotes/add', async (req, res) => {
-    const { quotes, title } = req.body
-    if(!Array.isArray(quotes) || !(typeof title == 'string')) {
-      return res.status(400).send('Please include an array of quotes and a title')
+    const { quotesWithLocations, title } = req.body
+    if(!Array.isArray(quotesWithLocations) || !(typeof title == 'string')) {
+      return res.status(400).send('Please include an array of quotes (with locations) and a title')
     }
 
-    insertQuotes(quotes, title)
+    insertQuotes(quotesWithLocations, title)
     res.send('We received your quote(s)')
   })
 

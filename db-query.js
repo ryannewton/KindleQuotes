@@ -48,11 +48,12 @@ const getBookById = async bookId => {
   }
 }
 
-const insertQuotes = async (quotes, bookTitle) => {
+const insertQuotes = async (quotesWithLocations, bookTitle) => {
   const { book_id: bookId } = await getBookByTitle(bookTitle)
-  quotes.forEach(async quote => {
+  quotesWithLocations.forEach(async quoteAndLocation => {
     try {
-      await client.query('INSERT INTO quotes(book_id, quote) VALUES($1, $2)', [bookId,quote])
+      const { quote, location } = quoteAndLocation
+      await client.query('INSERT INTO quotes(book_id, quote, location) VALUES($1, $2, $3)', [bookId,quote,location])
     } catch(err) {
       console.log('Error: ', err)
     }
