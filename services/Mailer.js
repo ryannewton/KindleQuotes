@@ -7,7 +7,7 @@ const toEmail = 'Ryan Newton <newton1988@gmail.com>'
 const fromEmail = 'Ryan Newton <rnewton@mba2018.hbs.edu>'
 const subject = 'Daily Book Quotes'
 
-const Mailer = (quotes, title) => {
+const Mailer = ({ quotes, bookTitle, author }) => {
   const msg = {
     to: toEmail,
     from: fromEmail,
@@ -19,7 +19,8 @@ const Mailer = (quotes, title) => {
       quote2: quotes[2],
       quote3: quotes[3],
       quote4: quotes[4],
-      title,
+      bookTitle,
+      author,
     },
   }
 

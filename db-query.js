@@ -5,9 +5,9 @@ const client = new Client({ connectionString: databaseUrl })
 
 client.connect()
 
-const insertBook = async title => {
+const insertBook = async ({ title, author }) => {
   try {
-    await client.query('INSERT INTO books(title) VALUES($1)', [title])
+    await client.query('INSERT INTO books(title, author) VALUES($1, $2)', [title, author])
   } catch(err) {
     console.log('Error: ', err)
   }
@@ -35,14 +35,14 @@ const getBookId = async title => {
   }
 }
 
-const getBookTitle = async bookId => {
+const getBookById = async bookId => {
   try {
-    const res = await client.query('SELECT title FROM books WHERE book_id = ($1)', [bookId])
+    const res = await client.query('SELECT title, author FROM books WHERE book_id = ($1)', [bookId])
     if(res.rows.length === 0) {
       return null
     }
-    const { title } = res.rows[0]
-    return title
+    const { title, author } = res.rows[0]
+    return { bookTitle: title, author }
   } catch(err) {
     console.log('Error: ', err)
   }
@@ -123,7 +123,7 @@ module.exports = {
   insertBook,
   deleteBook,
   getBookId,
-  getBookTitle,
+  getBookById,
   insertQuotes,
   deleteQuotes,
   getQuotesAndIds,

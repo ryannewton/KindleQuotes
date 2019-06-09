@@ -3,7 +3,7 @@ const {
   getScheduledEmails,
   updateEmailedDate,
   getQuotesAndIds,
-  getBookTitle,
+  getBookById,
 } = require('./db-query')
 const Mailer = require('./services/Mailer')
 
@@ -32,8 +32,8 @@ const scheduleEmail = async ({ time, bookId }) => {
     const quotesAndIds = await getQuotesAndIds({ bookId, numberOfQuotes: 5 })
     const quotes = quotesAndIds.map(quoteAndId => quoteAndId.quote)
     const quoteIds = quotesAndIds.map(quoteAndId => quoteAndId.quote_id)
-    const bookTitle = await getBookTitle(bookId)
-    Mailer(quotes, bookTitle)
+    const { bookTitle, author } = await getBookById(bookId)
+    Mailer({ quotes, bookTitle, author })
     updateEmailedDate(quoteIds)
   })
 }
