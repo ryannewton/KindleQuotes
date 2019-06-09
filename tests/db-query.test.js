@@ -1,7 +1,8 @@
 const {
   insertBook,
   deleteBook,
-  getBookId,
+  getBookByTitle,
+  getBookById,
   deleteQuotes,
   insertQuotes,
   getQuotesAndIds,
@@ -10,18 +11,30 @@ const {
 
 const sum = (a, b) => (a+b)
 const title = `Ryan's World`
+const author = 'Ryan Newton'
 const quotes = ['quote #1', 'quote #2']
 const quote = quotes[0]
-let book_id
+let bookId
+let book
 
 test('Checks if jest is working', () => {
   expect(sum(1, 2)).toBe(3)
 })
 
 test('Inserting and retrieving a book', async () => {
-  await insertBook(title)
-  book_id = await getBookId(title)
-  expect(book_id).toBeDefined()
+  await insertBook({ title, author })
+})
+
+test('Retriving book by Title', async () => {
+  book = await getBookByTitle(title)
+  bookId = book.book_id
+  expect(bookId).toBeDefined()
+})
+
+test('Retrieving book by ID', async () => {
+  book = await getBookById(bookId)
+  expect(book.bookTitle).toBe(title)
+  expect(book.author).toBe(author)
 })
 
 test('Inserting quotes and retrieving quotesAndIds', async () => {
@@ -48,7 +61,7 @@ test('Deleting quotes', async () => {
 
 test('Deleting a book', async () => {
   const deleteCount = await deleteBook(title)
-  expect(deleteCount).toBe(1)
-  book_id = await getBookId(title)
-  expect(book_id).toBeNull()
+  expect(deleteCount).toBeGreaterThanOrEqual(1)
+  book = await getBookByTitle(title)
+  expect(book).toBeNull()
 })
