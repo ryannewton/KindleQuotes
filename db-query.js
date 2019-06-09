@@ -84,6 +84,17 @@ const updateEmailedDate = async (quote_ids) => {
   })
 }
 
+const insertScheduledEmail = async (book_title, time) => {
+  const book_id = await getBookId(book_title)
+  try {
+    const res = await client.query('INSERT INTO scheduled_emails(book_id, time) VALUES($1, $2)',[book_id,time])
+    const scheduled_email = res.rows
+    return scheduled_email
+  } catch(err) {
+    console.log('Error: ', err)
+  }
+}
+
 module.exports = {
   insertBook,
   deleteBook,
@@ -93,4 +104,5 @@ module.exports = {
   getQuotesAndIds,
   getQuotes,
   updateEmailedDate,
+  insertScheduledEmail,
 }

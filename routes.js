@@ -7,6 +7,7 @@ const {
   insertBook,
   insertQuotes,
   deleteQuotes,
+  insertScheduledEmail,
 } = require('./db-query')
 const Mailer = require('./services/Mailer')
 
@@ -45,9 +46,11 @@ module.exports = app => {
 
   app.post('/quotes/schedule', async (req, res) => {
     const { title, time: { minute, hour }} = req.body
+    const time = hour+':'+minute+':00'
     const quotesAndIds = await getQuotesAndIds(title, 5)
     const quotes = quotesAndIds.map(quoteAndId => quoteAndId.quote)
     const quoteIds = quotesAndIds.map(quoteAndId => quoteAndId.quote_id)
+    insertScheduledEmail(title, time)
     const j = schedule.scheduleJob(`${minute} ${hour} * * *`, () => {
       Mailer(quotes, title)
       updateEmailedDate(quoteIds)
