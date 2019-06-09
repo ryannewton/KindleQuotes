@@ -71,17 +71,31 @@ const deleteQuotes = async (quotesText, bookTitle) => {
   })
 }
 
-// Takes numberOfQuotes and either a bookTitle or bookId
-const getQuotes = async ({ bookTitle, bookId, numberOfQuotes }) => {
-  if (!bookId) {
+// Takes either a bookTitle or bookId, status (optional), and numberOfQuotes (optional)
+const getQuotes = async ({ bookTitle, bookId, status, numberOfQuotes }) => {
+  let request = 'SELECT * FROM quotes WHERE book_id = $1'
+  let values = []
+  if (typeof bookId === 'undefined') {
     const book = await getBookByTitle(bookTitle)
     if(!book) {
       return null
     }
     bookId = book.book_id
   }
+  values.push(bookId)
+
+  if(typeof status !== 'undefined') {
+    values.push(status)
+    request += ' AND status = $' + values.length
+  }
+  request += ' ORDER BY location ASC NULLS FIRST'
+
+  if (typeof numberOfQuotes !== 'undefined') {
+    values.push(numberOfQuotes)
+    request += ' LIMIT $' + values.length
+  }
   try {
-    const res = await client.query('SELECT * FROM quotes WHERE book_id = $1 ORDER BY last_emailed ASC NULLS FIRST LIMIT $2',[bookId,numberOfQuotes])
+    const res = await client.query(request,values)
     const quotes = res.rows
     return quotes
   } catch(err) {
