@@ -103,10 +103,21 @@ const getQuotes = async ({ bookTitle, bookId, status, numberOfQuotes }) => {
   }
 }
 
-const updateEmailedDate = async (quote_ids) => {
-  quote_ids.forEach(async quote_id => {
+const updateEmailedDate = async (quoteIds) => {
+  quoteIds.forEach(async quoteId => {
     try {
-      await client.query('UPDATE quotes SET last_emailed = NOW() WHERE quote_id = $1',[quote_id])
+      await client.query('UPDATE quotes SET last_emailed = NOW(), status = $1 WHERE quote_id = $2',['SENT',quoteId])
+    } catch (err) {
+      console.log('Error: ', err)
+    }
+  })
+}
+
+const setQuotesToScheduled = async (bookId) => {
+  const quotes = await getQuotes({ bookId })
+  quotes.forEach(async quote => {
+    try {
+      await client.query('UPDATE quotes SET status = $1 WHERE quote_id = $2',['SCHEDULED',quote.quote_id])
     } catch (err) {
       console.log('Error: ', err)
     }
@@ -144,6 +155,7 @@ module.exports = {
   deleteQuotes,
   getQuotes,
   updateEmailedDate,
+  setQuotesToScheduled,
   insertScheduledEmail,
   getScheduledEmails,
 }

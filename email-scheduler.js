@@ -22,7 +22,7 @@ const scheduleAllEmails = async () => {
 const scheduleEmail = async ({ time, bookId }) => {
   const { minute, hour } = time
   schedule.scheduleJob(`${minute} ${hour} * * *`, async () => {
-    const quotes = await getQuotes({ bookId, numberOfQuotes: 5 })
+    const quotes = await getQuotes({ bookId, status: 'SCHEDULED', numberOfQuotes: 5 })
     const quotesText = quotes.map(quote => quote.text)
     const quoteIds = quotes.map(quote => quote.quote_id)
     const book = await getBookById(bookId)
