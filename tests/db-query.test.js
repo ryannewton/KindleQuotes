@@ -26,7 +26,7 @@ test('Inserting and retrieving a book', async () => {
 
 test('Inserting quotes and retrieving quotesAndIds', async () => {
   insertQuotes(quotes, title)
-  let quotesAndIds = await getQuotesAndIds(title, quotes.length)
+  let quotesAndIds = await getQuotesAndIds({ bookTitle: title, numberOfQuotes: quotes.length })
   const returnedQuotes = quotesAndIds.map(quotesAndId => quotesAndId.quote)
   expect(returnedQuotes.sort()).toEqual(quotes.sort())
   const returnedQuoteIds = quotesAndIds.map(quotesAndId => quotesAndId.quote_id)
@@ -42,7 +42,7 @@ test('Retrieving quotes', async () => {
 
 test('Deleting quotes', async () => {
   await deleteQuotes(quotes, title)
-  quotesAndIds = await getQuotesAndIds(title, quotes.length)
+  quotesAndIds = await getQuotesAndIds({ bookTitle: title, numberOfQuotes: quotes.length })
   expect(quotesAndIds).toEqual([])
 })
 

@@ -57,10 +57,12 @@ const deleteQuotes = async (quotes, book_title) => {
   })
 }
 
-const getQuotesAndIds = async (book_title, numberOfQuotes) => {
-  const book_id = await getBookId(book_title)
+const getQuotesAndIds = async ({ bookTitle, bookId, numberOfQuotes }) => {
+  if (!bookId) {
+    bookId = await getBookId(bookTitle)
+  }
   try {
-    const res = await client.query('SELECT quote_id, quote FROM quotes WHERE book_id = $1 ORDER BY last_emailed ASC NULLS FIRST LIMIT $2',[book_id,numberOfQuotes])
+    const res = await client.query('SELECT quote_id, quote FROM quotes WHERE book_id = $1 ORDER BY last_emailed ASC NULLS FIRST LIMIT $2',[bookId,numberOfQuotes])
     const quotes = res.rows
     return quotes
   } catch(err) {
@@ -68,8 +70,8 @@ const getQuotesAndIds = async (book_title, numberOfQuotes) => {
   }
 }
 
-const getQuotes = async (book_title, numberOfQuotes) => {
-  const quotesAndIds = await getQuotesAndIds(book_title, numberOfQuotes)
+const getQuotes = async (bookTitle, numberOfQuotes) => {
+  const quotesAndIds = await getQuotesAndIds({ bookTitle, numberOfQuotes })
   const quotes = quotesAndIds.map(quoteAndId => quoteAndId.quote)
   return quotes
 }

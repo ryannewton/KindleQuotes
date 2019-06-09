@@ -47,7 +47,7 @@ module.exports = app => {
   app.post('/quotes/schedule', async (req, res) => {
     const { title, time: { minute, hour }} = req.body
     const time = hour+':'+minute+':00'
-    const quotesAndIds = await getQuotesAndIds(title, 5)
+    const quotesAndIds = await getQuotesAndIds({ bookTitle: title, numberOfQuotes: 5 })
     const quotes = quotesAndIds.map(quoteAndId => quoteAndId.quote)
     const quoteIds = quotesAndIds.map(quoteAndId => quoteAndId.quote_id)
     insertScheduledEmail(title, time)
