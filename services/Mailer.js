@@ -1,7 +1,7 @@
 const sgMail = require('@sendgrid/mail')
 const keys = require('../config/keys')
 
-sgMail.setApiKey(keys.sendGridKey)
+sgMail.setApiKey(keys.sendgridKey)
 
 const toEmail = 'Ryan Newton <newton1988@gmail.com>'
 const fromEmail = 'Ryan Newton <rnewton@mba2018.hbs.edu>'
@@ -12,7 +12,7 @@ const Mailer = ({ quotesText, bookTitle, author }) => {
     to: toEmail,
     from: fromEmail,
     subject,
-    templateId: keys.sendGridTemplateId,
+    templateId: keys.sendgridTemplateId,
     dynamic_template_data: {
       quote0: quotesText[0],
       quote1: quotesText[1],

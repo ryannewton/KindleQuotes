@@ -1,4 +1,5 @@
 module.exports = {
-  sendGridKey: process.env.SEND_GRID_KEY,
+  sendgridKey: process.env.SENDGRID_KEY,
+  sendgridTemplateId: process.env.SENDGRID_TEMPLATE_ID,
   databaseUrl: process.env.DATABASE_URL
-};
+}
