@@ -9,6 +9,7 @@ const {
   insertScheduledEmail,
   getBookByTitle,
   setQuotesToScheduled,
+  insertUser,
 } = require('./db-query')
 const { scheduleEmail } = require('./email-scheduler')
 
@@ -21,7 +22,7 @@ module.exports = app => {
 
   app.post('/quotes/add', async (req, res) => {
     const { quotesWithLocations, title } = req.body
-    if(!Array.isArray(quotesWithLocations) || !(typeof title == 'string')) {
+    if (!Array.isArray(quotesWithLocations) || !(typeof title == 'string')) {
       return res.status(400).send('Please include an array of quotes (with locations) and a title')
     }
 
@@ -31,7 +32,7 @@ module.exports = app => {
 
   app.delete('/quotes/delete', async (req, res) => {
     const { quotes, title } = req.body
-    if(!Array.isArray(quotes) || !(typeof title == 'string')) {
+    if (!Array.isArray(quotes) || !(typeof title == 'string')) {
       return res.status(400).send('Please include an array of quotes and a title')
     }
 
@@ -52,6 +53,12 @@ module.exports = app => {
     scheduleEmail({ time, bookId })
     setQuotesToScheduled(bookId)
     res.send('Your emails have been scheduled')
+  })
+
+  app.post('/users/add', async (req, res) => {
+    const { email } = req.body
+    insertUser(email)
+    res.send('New user created')
   })
 
   app.get('/db/test-connection', async (req, res) => {

@@ -158,7 +158,27 @@ const getScheduledEmails = async () => {
   try {
     const res = await client.query('SELECT * FROM scheduled_emails')
     return res.rows
-  } catch(err) {
+  } catch (err) {
+    console.log('Error: ', err)
+  }
+}
+
+const insertUser = async email => {
+  try {
+    const res = await client.query('SELECT * FROM users WHERE email = $1', [email])
+    if (res.rows.length === 0) {
+      await client.query('INSERT INTO users(email) VALUES($1)', [email])
+    }
+  } catch (err) {
+    console.log('Error: ', err)
+  }
+}
+
+const getUser = async userId => {
+  try {
+    const res = await client.query('SELECT * FROM users WHERE user_id = $1', [userId])
+    return res.rows[0]
+  } catch (err) {
     console.log('Error: ', err)
   }
 }
@@ -175,4 +195,6 @@ module.exports = {
   setQuotesToScheduled,
   insertScheduledEmail,
   getScheduledEmails,
+  insertUser,
+  getUser,
 }
