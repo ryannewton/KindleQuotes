@@ -1,25 +1,20 @@
 const schedule = require('node-schedule')
-const { 
-  getScheduledEmails,
-  updateEmailedDate,
-  getQuotes,
-  getBookById,
-} = require('./db-query')
+const { getScheduledEmails, updateEmailedDate, getQuotes, getBookById } = require('./db-query')
 const Mailer = require('./services/Mailer')
-
 
 const scheduleAllEmails = async () => {
   const scheduledEmails = await getScheduledEmails()
   scheduledEmails.forEach(scheduledEmail => {
     const bookId = scheduledEmail.book_id
-    const hour = parseInt(scheduledEmail.time.substring(0,2))
-    const minute = parseInt(scheduledEmail.time.substring(3,5))
+    const hour = parseInt(scheduledEmail.time.substring(0, 2))
+    const minute = parseInt(scheduledEmail.time.substring(3, 5))
     const time = { minute, hour }
-    scheduleEmail({ time, bookId })
+    const userId = scheduledEmail.user_id
+    scheduleEmail({ time, bookId, userId })
   })
 }
 
-const scheduleEmail = async ({ time, bookId }) => {
+const scheduleEmail = async ({ time, bookId, userId }) => {
   const { minute, hour } = time
   schedule.scheduleJob(`${minute} ${hour} * * *`, async () => {
     const quotes = await getQuotes({ bookId, status: 'SCHEDULED', numberOfQuotes: 5 })
@@ -27,7 +22,7 @@ const scheduleEmail = async ({ time, bookId }) => {
     const quoteIds = quotes.map(quote => quote.quote_id)
     const book = await getBookById(bookId)
     const { bookTitle, author } = book
-    Mailer({ quotesText, bookTitle, author })
+    Mailer({ quotesText, bookTitle, author, userId })
     updateEmailedDate(quoteIds)
   })
 }

@@ -10,6 +10,7 @@ const {
   getBookByTitle,
   setQuotesToScheduled,
   insertUser,
+  getUser,
 } = require('./db-query')
 const { scheduleEmail } = require('./email-scheduler')
 
@@ -49,8 +50,9 @@ module.exports = app => {
   app.post('/quotes/schedule', async (req, res) => {
     const { bookTitle, time, email } = req.body
     const { book_id: bookId } = await getBookByTitle(bookTitle)
+    const { user_id: userId } = await getUser({ email })
     insertScheduledEmail(bookTitle, time, email)
-    scheduleEmail({ time, bookId })
+    scheduleEmail({ time, bookId, userId })
     setQuotesToScheduled(bookId)
     res.send('Your emails have been scheduled')
   })
