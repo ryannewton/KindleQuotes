@@ -8,7 +8,7 @@ client.connect()
 const insertBook = async ({ title, author }) => {
   try {
     await client.query('INSERT INTO books(title, author) VALUES($1, $2)', [title, author])
-  } catch(err) {
+  } catch (err) {
     console.log('Error: ', err)
   }
 }
@@ -17,7 +17,7 @@ const deleteBook = async title => {
   try {
     const res = await client.query('DELETE FROM books WHERE books.title = ($1)', [title])
     return res.rowCount
-  } catch(err) {
+  } catch (err) {
     console.log('Error: ', err)
   }
 }
@@ -25,12 +25,12 @@ const deleteBook = async title => {
 const getBookByTitle = async title => {
   try {
     const res = await client.query('SELECT * FROM books WHERE title = ($1)', [title])
-    if(res.rows.length === 0) {
+    if (res.rows.length === 0) {
       return null
     }
     const book = res.rows[0]
     return book
-  } catch(err) {
+  } catch (err) {
     console.log('Error: ', err)
   }
 }
@@ -38,12 +38,13 @@ const getBookByTitle = async title => {
 const getBookById = async bookId => {
   try {
     const res = await client.query('SELECT title, author FROM books WHERE book_id = ($1)', [bookId])
-    if(res.rows.length === 0) {
+    if (res.rows.length === 0) {
       return null
     }
     const { title, author } = res.rows[0]
+    // change to just return res.rows[0]
     return { bookTitle: title, author }
-  } catch(err) {
+  } catch (err) {
     console.log('Error: ', err)
   }
 }
@@ -53,8 +54,12 @@ const insertQuotes = async (quotes, bookTitle) => {
   quotes.forEach(async quote => {
     try {
       const { text, location } = quote
-      await client.query('INSERT INTO quotes(book_id, text, location) VALUES($1, $2, $3)', [bookId,text,location])
-    } catch(err) {
+      await client.query('INSERT INTO quotes(book_id, text, location) VALUES($1, $2, $3)', [
+        bookId,
+        text,
+        location,
+      ])
+    } catch (err) {
       console.log('Error: ', err)
     }
   })
@@ -64,8 +69,11 @@ const deleteQuotes = async (quotesText, bookTitle) => {
   const { book_id: bookId } = await getBookByTitle(bookTitle)
   quotesText.forEach(async quoteText => {
     try {
-      await client.query('DELETE FROM quotes WHERE quotes.text = ($1) AND quotes.book_id = ($2)', [quoteText, bookId])
-    } catch(err) {
+      await client.query('DELETE FROM quotes WHERE quotes.text = ($1) AND quotes.book_id = ($2)', [
+        quoteText,
+        bookId,
+      ])
+    } catch (err) {
       console.log('Error: ', err)
     }
   })
@@ -77,14 +85,14 @@ const getQuotes = async ({ bookTitle, bookId, status, numberOfQuotes }) => {
   let values = []
   if (typeof bookId === 'undefined') {
     const book = await getBookByTitle(bookTitle)
-    if(!book) {
+    if (!book) {
       return null
     }
     bookId = book.book_id
   }
   values.push(bookId)
 
-  if(typeof status !== 'undefined') {
+  if (typeof status !== 'undefined') {
     values.push(status)
     request += ' AND status = $' + values.length
   }
@@ -95,29 +103,35 @@ const getQuotes = async ({ bookTitle, bookId, status, numberOfQuotes }) => {
     request += ' LIMIT $' + values.length
   }
   try {
-    const res = await client.query(request,values)
+    const res = await client.query(request, values)
     const quotes = res.rows
     return quotes
-  } catch(err) {
+  } catch (err) {
     console.log('Error: ', err)
   }
 }
 
-const updateEmailedDate = async (quoteIds) => {
+const updateEmailedDate = async quoteIds => {
   quoteIds.forEach(async quoteId => {
     try {
-      await client.query('UPDATE quotes SET last_emailed = NOW(), status = $1 WHERE quote_id = $2',['SENT',quoteId])
+      await client.query(
+        'UPDATE quotes SET last_emailed = NOW(), status = $1 WHERE quote_id = $2',
+        ['SENT', quoteId]
+      )
     } catch (err) {
       console.log('Error: ', err)
     }
   })
 }
 
-const setQuotesToScheduled = async (bookId) => {
+const setQuotesToScheduled = async bookId => {
   const quotes = await getQuotes({ bookId })
   quotes.forEach(async quote => {
     try {
-      await client.query('UPDATE quotes SET status = $1 WHERE quote_id = $2',['SCHEDULED',quote.quote_id])
+      await client.query('UPDATE quotes SET status = $1 WHERE quote_id = $2', [
+        'SCHEDULED',
+        quote.quote_id,
+      ])
     } catch (err) {
       console.log('Error: ', err)
     }
@@ -127,12 +141,15 @@ const setQuotesToScheduled = async (bookId) => {
 const insertScheduledEmail = async (bookTitle, time) => {
   const { book_id: bookId } = await getBookByTitle(bookTitle)
   const { hour, minute } = time
-  const timeStr = hour+':'+minute+':00'
+  const timeStr = hour + ':' + minute + ':00'
   try {
-    const res = await client.query('INSERT INTO scheduled_emails(book_id, time) VALUES($1, $2)',[bookId,timeStr])
+    const res = await client.query('INSERT INTO scheduled_emails(book_id, time) VALUES($1, $2)', [
+      bookId,
+      timeStr,
+    ])
     const scheduled_email = res.rows
     return scheduled_email
-  } catch(err) {
+  } catch (err) {
     console.log('Error: ', err)
   }
 }
