@@ -138,15 +138,16 @@ const setQuotesToScheduled = async bookId => {
   })
 }
 
-const insertScheduledEmail = async (bookTitle, time) => {
+const insertScheduledEmail = async (bookTitle, time, email) => {
   const { book_id: bookId } = await getBookByTitle(bookTitle)
+  const { user_id: userId } = await getUser({ email })
   const { hour, minute } = time
   const timeStr = hour + ':' + minute + ':00'
   try {
-    const res = await client.query('INSERT INTO scheduled_emails(book_id, time) VALUES($1, $2)', [
-      bookId,
-      timeStr,
-    ])
+    const res = await client.query(
+      'INSERT INTO scheduled_emails(book_id, time, user_id) VALUES($1, $2, $3)',
+      [bookId, timeStr, userId]
+    )
     const scheduled_email = res.rows
     return scheduled_email
   } catch (err) {
@@ -174,9 +175,14 @@ const insertUser = async email => {
   }
 }
 
-const getUser = async userId => {
+const getUser = async ({ userId, email }) => {
   try {
-    const res = await client.query('SELECT * FROM users WHERE user_id = $1', [userId])
+    let res
+    if (userId) {
+      res = await client.query('SELECT * FROM users WHERE user_id = $1', [userId])
+    } else if (email) {
+      res = await client.query('SELECT * FROM users WHERE email = $1', [email])
+    }
     return res.rows[0]
   } catch (err) {
     console.log('Error: ', err)

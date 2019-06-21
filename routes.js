@@ -47,9 +47,9 @@ module.exports = app => {
   })
 
   app.post('/quotes/schedule', async (req, res) => {
-    const { bookTitle, time } = req.body
+    const { bookTitle, time, email } = req.body
     const { book_id: bookId } = await getBookByTitle(bookTitle)
-    insertScheduledEmail(bookTitle, time)
+    insertScheduledEmail(bookTitle, time, email)
     scheduleEmail({ time, bookId })
     setQuotesToScheduled(bookId)
     res.send('Your emails have been scheduled')
