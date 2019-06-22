@@ -1,6 +1,6 @@
 const sgMail = require('@sendgrid/mail')
 const keys = require('../config/keys')
-const { getUser } = require('../db-query')
+const { userQueries } = require('../db-queries')
 
 sgMail.setApiKey(keys.sendgridKey)
 
@@ -8,7 +8,7 @@ const fromEmail = 'Ryan Newton <rnewton@mba2018.hbs.edu>'
 const subject = 'Daily Book Quotes'
 
 const Mailer = async ({ quotesText, bookTitle, author, userId }) => {
-  const { email: toEmail } = await getUser({ userId })
+  const { email: toEmail } = await userQueries.get({ userId })
   const msg = {
     to: toEmail,
     from: fromEmail,
