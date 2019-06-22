@@ -10,12 +10,12 @@ module.exports = app => {
   })
 
   app.post('/quotes/add', async (req, res) => {
-    const { quotesWithLocations, title } = req.body
+    const { quotesWithLocations, title, user } = req.body
     if (!Array.isArray(quotesWithLocations) || !(typeof title == 'string')) {
       return res.status(400).send('Please include an array of quotes (with locations) and a title')
     }
 
-    quoteQueries.insert(quotesWithLocations, title)
+    quoteQueries.insert(quotesWithLocations, title, user)
     res.send('We received your quote(s)')
   })
 
@@ -30,8 +30,8 @@ module.exports = app => {
   })
 
   app.get('/quotes/retrieve', async (req, res) => {
-    const { title } = req.body
-    const quotes = await quoteQueries.get({ bookTitle: title })
+    const { title, user } = req.body
+    const quotes = await quoteQueries.get({ bookTitle: title, userEmail: user })
     res.send(quotes)
   })
 
@@ -41,7 +41,7 @@ module.exports = app => {
     const { user_id: userId } = await userQueries.get({ email })
     scheduledEmailQueries.insert(bookTitle, time, email)
     scheduleEmail({ time, bookId, userId })
-    quoteQueries.setToScheduled(bookId)
+    quoteQueries.setToScheduled({ bookId, userId })
     res.send('Your emails have been scheduled')
   })
 
